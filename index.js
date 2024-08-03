@@ -17,6 +17,7 @@ require('./models/cart.model');
 require('./models/address.model');
 require('./models/cartdetail.model');
 require('./models/blog.model');
+require('./models/review.model');
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());

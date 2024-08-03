@@ -5,8 +5,8 @@ const addressRoute = require('./address.route');
 const cartRoute = require('./cart.route');
 const orderRoute = require('./order.route');
 const blogRoute = require('./blog.route');
-
-
+const revenue = require('./revenue.route');
+const review = require('./review.route');
 
 module.exports = (app) => {
   app.use('/product', productRoute);
@@ -16,5 +16,7 @@ module.exports = (app) => {
  app.use('/cart', cartRoute);
  app.use('/order', orderRoute);
  app.use('/blog', blogRoute);
+ app.use('/revenue', revenue);
+ app.use('/review', review);
 
 }

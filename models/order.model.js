@@ -12,7 +12,10 @@ const orderSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-       
+        subTotal: {
+            type: Number,
+            required: true
+        },
         image: {
             type: String
         },
@@ -34,16 +37,22 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    totalPrice: {
+        type: Number,
+        // required: true
+    },
     customerAddress: {
         type: String,
         required: true
     },
     note: {
         type: String
+        
+
     },
     status: {
         type: String,
-        default: 'pending' // Trạng thái mặc định của đơn hàng
+        default: 'pending'
     },
     createdAt: {
         type: Date,

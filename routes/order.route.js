@@ -20,7 +20,7 @@ router.get('/user/:userId', async (req, res) => {
 
 
 router.post('/checkout', async (req, res) => {
-    const { products, customerPhone, customerAddress, note, userId, customerName } = req.body;
+    const { products, customerPhone, customerAddress, note, userId, customerName,totalPrice } = req.body;
 
     try {
         // Kiểm tra tồn kho
@@ -41,6 +41,7 @@ router.post('/checkout', async (req, res) => {
             customerAddress: customerAddress,
             note: note,
             user: userId,
+            totalPrice:totalPrice,
             customerName: customerName
         });
 
@@ -80,20 +81,23 @@ router.put('/:orderId', async (req, res) => {
     const { status } = req.body;
 
     try {
-        const order = await Order.findById(orderId);
+        // Tìm và cập nhật trạng thái đơn hàng
+        const updatedOrder = await Order.findByIdAndUpdate(
+            orderId,
+            { status: status },
+            { new: true, runValidators: true }
+        );
 
-        if (!order) {
+        if (!updatedOrder) {
             return res.status(404).json({ status: false, message: 'Đơn hàng không tồn tại' });
         }
-
-        order.status = status;
-        const updatedOrder = await order.save();
 
         res.json({ status: true, data: updatedOrder });
     } catch (error) {
         res.status(500).json({ status: false, message: 'Đã xảy ra lỗi khi cập nhật đơn hàng', error });
     }
 });
+
 
 
 module.exports = router;

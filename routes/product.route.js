@@ -71,14 +71,46 @@ router.put("/update/:productId", async (req, res) => {
     res.status(400).json({ status: false, error: error.message });
   }
 });
-//get product by category
+
+// Get products by category with pagination
 router.get("/category/:categoryId", async (req, res) => {
   const { categoryId } = req.params;
+  // Lấy số trang và số lượng sản phẩm mỗi trang từ query string
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   try {
-    const products = await Product.find({ category: categoryId }).sort({
-      createdAt: -1,
+    // Lấy tất cả sản phẩm theo danh mục với phân trang
+    if (categoryId === "all") {
+      const products = await Product.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      const totalProducts = await Product.countDocuments(); // Đếm tổng số được sản phẩm
+      res.json({
+        status: true,
+        data: products,
+        totalProducts,
+        currentPage: page,
+        totalPages: Math.ceil(totalProducts / limit),
+      });
+    }
+    const products = await Product.find({ category: categoryId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const totalProducts = await Product.countDocuments({
+      category: categoryId,
+    }); // Đếm tổng số sản phẩm theo danh mục
+
+    res.json({
+      status: true,
+      data: products,
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
     });
-    res.json({ status: true, data: products });
   } catch (error) {
     res.json({ status: false, error: error });
   }
@@ -98,13 +130,28 @@ router.get("/search", async (req, res) => {
   }
 });
 
-
-
-// Get all products
+// Get all products with pagination
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });  
-    res.json({ status: true, data: products });
+    // Lấy số trang và số lượng sản phẩm mỗi trang từ query string
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Lấy tất cả sản phẩm với phân trang
+    const products = await Product.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const totalProducts = await Product.countDocuments(); // Đếm tổng số sản phẩm
+
+    res.json({
+      status: true,
+      data: products,
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+    });
   } catch (error) {
     res.json({ status: false, error: error });
   }
